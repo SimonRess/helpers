@@ -1,0 +1,77 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code.
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*.
+
+```{r}
+plot(cars)
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+
+------------------------------------------------------------------------
+
+**dplyr version \>= 0.7**
+
+-   assignment (:=)
+
+-   unquoting (!!) column names to not evaluate it
+
+dplyr starting with version 0.7 allows you to use := to dynamically assign parameter names. You can write your function as:
+
+```{r}
+# --- dplyr version 0.7+---
+multipetal <- function(df, n) {
+    varname <- paste("petal", n , sep=".")
+    mutate(df, !!varname := Petal.Width * n)
+}
+```
+
+**dplyr version \>= 1.0**
+
+With the latest dplyr version you can use the syntax from the glue package when naming parameters when using :=. So here the {} in the name grab the value by evaluating the expression inside.
+
+```{r}
+multipetal <- function(df, n) {
+  mutate(df, "petal.{n}" := Petal.Width * n)
+}
+```
+
+If you are passing a column name to your function, you can use {{}} in the string as well as for the column name
+
+```{r}
+meanofcol <- function(df, col) {
+  mutate(df, "Mean of {{col}}" := mean({{col}}))
+}
+meanofcol(iris, Petal.Width)
+```
+
+**rlang 0.4.0**
+
+With rlang 0.4.0 we have curly-curly operators ({{}}) which makes this very easy. When a dynamic column name shows up on the left-hand side of an assignment, use :=.
+
+library(dplyr)
+
+library(rlang)
+
+iris1 \<- tbl_df(iris)
+
+multipetal \<- function(df, n) {
+
+varname \<- paste("petal", n , sep=".")
+
+mutate(df, {{varname}} := Petal.Width \* n)
+
+}
+
+multipetal(iris1, 4)
+
+<https://stackoverflow.com/questions/26003574/use-dynamic-name-for-new-column-variable-in-dplyr>
