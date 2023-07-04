@@ -35,7 +35,7 @@
 
 #3. lapply-assign
   `%=%` <- function(names, input, env=parent.frame()) {
-    names = as.character(substitute(c(a, b, c))[-1])
+    names = as.character(substitute(names)[-1])
     invisible(lapply(seq_along(names), function(i) assign(names[i], input[[i]], envir = env)))
   }
 
