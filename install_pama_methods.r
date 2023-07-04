@@ -25,8 +25,11 @@
 # Working: Install from GitHub (I) ----
   if(!require("remotes")) install.packages("remotes")
   library("remotes")
-  install_github("https://github.com/SimonRess/PaMaTo/")
+  # install_github("https://github.com/SimonRess/PaMaTo/") # <- Fast but no vignette available after installation
+  install_github("https://github.com/SimonRess/PaMaTo/", build_manual = TRUE, build_vignettes = TRUE)
   library("pama")
+
+  help(package="pama") #
 
   
   # OR
@@ -35,6 +38,9 @@
 # Working: Install from GitHub (II) ----
   if(!require("devtools")) install.packages("devtools")
   library(devtools)
-  install_github("https://github.com/SimonRess/PaMaTo/")
+  # install_github("https://github.com/SimonRess/PaMaTo/") # <- Fast but no vignette available after installation
+  install_github("https://github.com/SimonRess/PaMaTo/", build_manual = TRUE, build_vignettes = TRUE)
   library("pama")
+
+  help(package="pama") #
 
