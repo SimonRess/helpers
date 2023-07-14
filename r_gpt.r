@@ -1,3 +1,8 @@
+# Requirements:
+# 1. Create an OpenAI API account at https://auth0.openai.com/u/signup
+# 2. Create here (https://platform.openai.com/account/api-keys) an API key and copy it
+# 3. Insert the API key into the Sys.setenv() function below and run it
+
 Sys.setenv(openai_secret_key = "***")
 
 if(!require("dplyr")) install.packages("dplyr")
