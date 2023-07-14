@@ -1,9 +1,16 @@
 # Requirements:
 # 1. Create an OpenAI API account at https://auth0.openai.com/u/signup
-# 2. Create here (https://platform.openai.com/account/api-keys) an API key and copy it
-# 3. Insert the API key into the Sys.setenv() function below and run it
+# 2. Register your payment method here (https://platform.openai.com/account/billing/payment-methods); Costs <1Cent per message
+# 3. Choose a max payment per month (e.g. 2€) here (https://platform.openai.com/account/billing/limits)
+# 4. Create here (https://platform.openai.com/account/api-keys) an API key and copy it
+# 5. Insert the API key into the Sys.setenv() function below and run it
 
 Sys.setenv(openai_secret_key = "***")
+
+# Usage
+# 1. Install & load packages below
+# 2. Define the g() function -> run line 22-115 at once
+# 3. Send your question / command by running g("your question or command") 
 
 if(!require("dplyr")) install.packages("dplyr")
 library(dplyr)
