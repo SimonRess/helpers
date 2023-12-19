@@ -19,7 +19,7 @@ library(httr)
 if(!require("jsonlite")) install.packages("jsonlite")
 library(jsonlite)
 
-g = function(prompt = NULL, apiKey= Sys.getenv("openai_secret_key"), reset = FALSE) { #, log.file=FALSE
+g = function(prompt = NULL, apiKey= Sys.getenv("openai_secret_key"), reset = FALSE, rcoder=TRUE, execute = TRUE) { #, log.file=FALSE
   
 #Logging console output
   #if(log.file){
@@ -30,11 +30,14 @@ g = function(prompt = NULL, apiKey= Sys.getenv("openai_secret_key"), reset = FAL
   
   
 #Prompt Engineering: Specify output format/content-type
-prompt.embedded = paste(
+if(rcoder) {
+  prompt.embedded = paste(
 "You are an R coding assistant. For the rest of this conversation, return R code only.
 Do not include anything else such as extra characters or comments.
 DO NOT install any packages but assume I already have them installed.
 Prompt: ",  substr(prompt,2, nchar(prompt)))
+} else { prompt.embedded = substr(prompt,2, nchar(prompt))}
+
 
 #Create initial context
   if(!exists("openai_completions") | reset){
@@ -79,20 +82,36 @@ Prompt: ",  substr(prompt,2, nchar(prompt)))
 #Save Response
   print = content(response)$choices[[1]]$message$content
   #rough check if response is R Code, contains functions, flag as a comment
-  if(!grepl("[a-z]\\(", print)) print = paste0("#", print)
+  if(!grepl("[a-z]\\(", print)) print = paste0("# ", print)
 
 
-#Send prompt to console
-  rstudioapi::sendToConsole(paste0("#",prompt), execute = TRUE)
+  #execute replied R Code directly
+  if(execute) {
+    #Send prompt to console
+      rstudioapi::sendToConsole(paste0("# ",prompt), execute = TRUE)
   
-#Send the R comments to the console
-  rstudioapi::sendToConsole(code = print %>%
+    #Send the R comments to the console
+      rstudioapi::sendToConsole(code = print %>%
                               stringr::str_remove('^\n') %>%
                               stringr::str_remove('^R') %>%
                               stringr::str_remove_all('\\`\\`\\`\\{r\\}') %>%
                               stringr::str_remove_all('\\`\\`\\`') %>%
                               stringr::str_trim(side = 'left'),
                               execute = TRUE, echo = TRUE)
+  } else {
+    #Send prompt to console
+      rstudioapi::sendToConsole(paste0("# ",prompt), execute = TRUE)
+  
+    #Send the R comments to the console
+      rstudioapi::sendToConsole(code = print %>%
+                              stringr::str_remove('^\n') %>%
+                              stringr::str_remove('^R') %>%
+                              stringr::str_remove_all('\\`\\`\\`\\{r\\}') %>%
+                              stringr::str_remove_all('\\`\\`\\`') %>%
+                              stringr::str_trim(side = 'left'),
+                              execute = execute, echo = TRUE)
+  }
+
 
 
 
@@ -113,6 +132,13 @@ Prompt: ",  substr(prompt,2, nchar(prompt)))
   
     
 }
+
+t = function(prompt = NULL) {
+  g(prompt, rcoder=FALSE, execute=FALSE)
+}
+
+
+t("Was ist Data Governance?")
 
 
 # Examplary Usage
