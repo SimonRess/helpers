@@ -5,7 +5,7 @@
 # 4. Create here (https://platform.openai.com/account/api-keys) an API key and copy it
 # 5. Insert the API key into the Sys.setenv() function below and run it
 
-Sys.setenv(openai_secret_key = "***")
+Sys.setenv(openai_secret_key = "***") # api_key
 
 # Usage
 # 1. Install & load packages below
@@ -18,6 +18,84 @@ if(!require("httr")) install.packages("httr")
 library(httr)
 if(!require("jsonlite")) install.packages("jsonlite")
 library(jsonlite)
+
+
+
+#----------------------#
+## Image Generation ####
+#----------------------#
+
+# The Images API provides three methods for interacting with images:
+# 
+# - Creating images from scratch based on a text prompt (DALL·E 3 and DALL·E 2)
+# - Creating edited versions of images by having the model replace some areas of a pre-existing image, based on a new text prompt (DALL·E 2 only)
+# - Creating variations of an existing image (DALL·E 2 only)
+
+#library("png")
+
+# if(!require("RCurl")) install.packages("RCurl")
+#   library("RCurl")
+# 
+# if(!require("imager")) install.packages("imager")
+#   library("imager")
+if(!require("magick")) install.packages("magick")
+  library("magick")
+
+ 
+
+# Generations
+
+  OPENAI_API_KEY = Sys.getenv("openai_secret_key")
+  model = "dall-e-3"
+  size = "1024x1024"
+  prompt = "a white siamese cat"
+
+  # URL und Payload für die Anfrage
+    url <- "https://api.openai.com/v1/images/generations"
+    payload <- list(
+      model = model,
+      prompt = paste0("I NEED to test how the tool works with extremely simple prompts. DO NOT add any detail, just use it AS-IS: ", prompt),
+      n = 1,
+      size = size
+    )
+  
+  # Führe die Anfrage aus
+    response <- POST(url,
+                     add_headers("Content-Type" = "application/json",
+                                 "Authorization" = paste("Bearer", OPENAI_API_KEY)),
+                     body = toJSON(payload
+                                   , pretty = TRUE
+                                   , auto_unbox = TRUE # required, else prompt will be a list, but a string is required
+                                   )
+                     )
+
+  # Überprüfe die Antwort
+    if (http_type(response) == "application/json") {
+      content <- data.frame(content(response, "parsed"))
+      print(content$data.revised_prompt)
+      # browseURL(content$data.url)
+      
+      temp = tempfile(fileext = ".png")
+      download.file(content$data.url, destfile = temp, mode = "wb") # "test.png"
+      #too slow
+        # img = readPNG(temp)
+        # grid::grid.raster(img) 
+      img <- magick::image_read(temp)
+      plot(img)
+  
+  
+      
+    } else {
+      print("Error when retrieving the data.")
+    }
+
+
+
+#---------------------------------#
+## Code Generation & Execution ####
+#---------------------------------#
+
+#Generate R Code by GPT and execute it locally on the fly
 
 g = function(prompt = NULL, apiKey= Sys.getenv("openai_secret_key"), reset = FALSE, rcoder=TRUE, execute = TRUE) { #, log.file=FALSE
   
@@ -203,3 +281,72 @@ g("Run a cluster analysis on 'Rows' and 'Cols' and visualize the result")
 g("Use Fuzzy Clustering and visualize by clustering and membership")
 
 g("Differentiate the Cluster by color and the Membership by color intensity")
+
+
+
+
+
+#---------------------------------------------------------------#
+## RAG - Retrieval Augmented Generation (by vector database) ####
+#---------------------------------------------------------------#
+
+  install.packages("pdftools")
+  library(pdftools)
+  
+  library(httr) # contains: content() -> Extract content from a request
+  
+  pdf_content <- pdf_text(r"(<Filename>)")
+  
+  #Check how to split paragraphs
+    # strsplit(pdf_content[7], "\n\n\n")
+  
+  # Actual splitting of paragraphs
+    doc_snippets = lapply(pdf_content, function(x) strsplit(x, "\n\n\n"))
+    doc_snippets = unlist(a)
+  
+    doc_snippets = doc_snippets[1:324]
+  
+    # doc_snippets[1]
+
+
+
+  url.completions = "https://api.openai.com/v1/completions"
+  url.embeddings = "https://api.openai.com/v1/embeddings"
+  url.fine_tune = "https://api.openai.com/v1/fine-tunes"
+  url.chat_completions = "https://api.openai.com/v1/chat/completions"
+
+  gpt3_single_embedding = function(input
+                                 , model = 'text-embedding-ada-002'
+                                 ){
+    require(httr)
+  
+    parameter_list = list(model = model
+                          , input = input)
+  
+    request_base = httr::POST(url = url.embeddings
+                              , body = parameter_list
+                              , httr::add_headers(Authorization = paste("Bearer", openai_secret_key))
+                              , encode = "json")
+  
+    if(request_base$status_code != 200){
+      warning(paste0("Request completed with error. Code: ", request_base$status_code
+                     , ", message: ", content(request_base)$error$message))
+    }
+  
+    output_base = httr::content(request_base)
+  
+    # embedding_raw = to_numeric(unlist(output_base$data[[1]]$embedding))
+    embedding_raw = as.numeric(unlist(output_base$data[[1]]$embedding))
+  
+  
+    return(embedding_raw)
+  
+  }
+
+
+  # receive embeddings
+  doc_embeddings = gpt3_single_embedding(input = doc_snippets[17])
+
+
+
+
