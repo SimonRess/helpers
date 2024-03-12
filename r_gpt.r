@@ -48,7 +48,7 @@ if(!require("magick")) install.packages("magick")
   OPENAI_API_KEY = Sys.getenv("openai_secret_key")
   model = "dall-e-3"
   size = "1024x1024"
-  prompt = "a white siamese cat"
+  prompt = "A Corgi sleeping on its tummy" # "a white siamese cat with big paws"
 
   # URL und Payload für die Anfrage
     url <- "https://api.openai.com/v1/images/generations"
@@ -347,6 +347,36 @@ g("Differentiate the Cluster by color and the Membership by color intensity")
   # receive embeddings
   doc_embeddings = gpt3_single_embedding(input = doc_snippets[17])
 
-
-
+  
+  
+  
+  
+  
+  
+#---------------------#
+# openai - package ####
+#---------------------#
+  
+  
+  #----------------------#
+  ## Image Generation ####
+  #----------------------#  
+    
+  
+  prompt = "Electrons orbiting an atomic nucleus in photorealistic style" #
+  
+  prompt =  "A field of wheat where people of different cultures stand and talk in their traditional clothes"
+  
+  library(openai)
+  
+  size = "1024x1024" # c("256x256", "512x512", "1024x1024")
+  
+  url = openai::create_image(prompt = prompt,
+                         n = 1,
+                         size = size,
+                         openai_api_key = OPENAI_API_KEY)
+  
+  filename = paste(r"(C:\Users\sress\Downloads)", "ShinyTron2.png", sep = "/")
+  
+  download.file(url$data[[1]], filename, mode = "wb")
 
