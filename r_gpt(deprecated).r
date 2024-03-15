@@ -1,3 +1,9 @@
+
+# Find the current version here:
+# - llm: 
+# - diffusion:
+
+
 # Requirements:
 # 1. Create an OpenAI API account at https://auth0.openai.com/u/signup
 # 2. Register your payment method here (https://platform.openai.com/account/billing/payment-methods); Costs <1Cent per message
