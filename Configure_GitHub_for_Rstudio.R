@@ -1,5 +1,19 @@
-# see original: https://gist.github.com/Z3tt/3dab3535007acf108391649766409421
+#--------------------------------#
+# Adding credentials manually ####
+#--------------------------------#
 
+# In R Studio Terminal 
+# - Navigate into  ".ssh" 
+# - add file ".git-credentials" 
+# - add content (PAT = Personal access tokens from https://github.com/settings/tokens): https://PersonalAccessToken:<PAT>@github.com
+
+
+
+#----------------------------#
+# Using package {usethis] ####
+#----------------------------#
+
+# see original: https://gist.github.com/Z3tt/3dab3535007acf108391649766409421
 
 #### 1. Sign up at GitHub.com ################################################
 
