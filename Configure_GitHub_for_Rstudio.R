@@ -1,3 +1,6 @@
+#INFOS about GITHUB Personal Access Tokens
+  https://happygitwithr.com/https-pat#store-pat
+
 #--------------------------------#
 # Adding credentials manually ####
 #--------------------------------#
