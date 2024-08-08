@@ -4,10 +4,26 @@
 
 # In R Studio Terminal 
 # - Navigate into  ".ssh" 
-# - add file ".git-credentials" 
+`cd <...>/.ssh`
+#check existing files
+`ls -la`
+# - if not already existing add file ".git-credentials" 
+touch .git-credentials
 # - add content (PAT = Personal access tokens from https://github.com/settings/tokens): https://PersonalAccessToken:<PAT>@github.com
+vim .git-credentials
+# check content of .git-credentials file
+`cat .git-credentials`
 
+#------------------------------------------------#
+# Adding credentials with {gitcreds} package  ####
+#------------------------------------------------#
+#Leads to the same result als manual adding of git credentials
 
+#put the PAT into the Git credential store
+  gitcreds::gitcreds_set()
+
+#check .git-credentials file
+  file.edit("~/.git-credentials")
 
 #----------------------------#
 # Using package {usethis] ####
@@ -65,6 +81,9 @@ usethis::edit_r_environ()
 #### 5. Verify settings ######################################################
 
 usethis::git_sitrep()
+
+#another way to check settings
+gitcreds::gitcreds_get("https://github.com", use_cache=F)
 
 ## Your username and email should be stated correctly in the output. 
 ## Also, the report shoud cotain something like:
